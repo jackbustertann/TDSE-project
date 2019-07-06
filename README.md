@@ -104,6 +104,9 @@ def init():
 ## Defining a set of frames for the animation
 
 ```python
+positions = [0.001 * i for i in range(-5000,5001)]
+initial_wavefunction = [initial_wavefunction(5,i) for i in positions]
+
 def animate(i):
     x = positions
     y = time_step_forward_second(0.25, i, initial_wavefunction)
