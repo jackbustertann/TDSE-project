@@ -105,6 +105,7 @@ def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
         wf_updated[i] = wf_initial[i] + (k_1[i] + 2*(k_2[i] + k_3[i]) + k_4[i])/6
     return(wf_updated) 
 ```
+![](first_order_approximation.png)
 
 ## Plotting the fourth order approximation for a step in time
 
@@ -117,3 +118,4 @@ pdf_one_step_2 = norm(pdf(wf_one_step_2))
 plt.plot(positions, pdf_initial, positions, pdf_one_step_2)
 plt.axis([-3, 3, 0, 0.006])
 ```
+![](RK4_approximation.png)
