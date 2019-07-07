@@ -106,7 +106,7 @@ def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
     return(wf_updated) 
 ```
 
-# Plotting a fourth order approximation for a step in time
+## Plotting a fourth order approximation for a step in time
 
 ```python
 positions = [(0.01 * i) for i in range(-5000,5001)]
