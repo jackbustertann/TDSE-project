@@ -2,15 +2,13 @@
 
 ## Motivation
 
-Solving the TDSE using the finite differences method for the simple case of a free-particle.
+Solving the one-dimensional Time Dependent Schrodinger Equation using the finite differences method for the simple case of a free-particle.
 
 ## Importing libaries
 
 ```python
 import math
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib import animation, rc
 ```
 
 ## Creating a gaussian shaped initial wavefunction
@@ -27,99 +25,95 @@ def probability_density(wavefunction):
     wavefunction = np.array(wavefunction)
     conjugate_wavefunction = np.conjugate(wavefunction)
     probability_density = wavefunction * conjugate_wavefunction
-    probability_density_real = list(probability_density.real)
-    return probability_density_real
+    return list(probability_density.real)
 ```
 
 ## Applying normalisation condition to a probability density function
 
 ```python
-def normalisation(prob_density, x_gap):
-    total = np.sum(np.array(prob_density) * x_gap)
-    normalised_prob_density = []
-    for point in prob_density:
+def norm(pdf):
+    total = np.sum(np.array(pdf))
+    norm_pdf = []
+    for point in pdf:
         point /= total
-        normalised_prob_density.append(point)
-    return normalised_prob_density
+        norm_pdf.append(point)
+    return norm_pdf
 ```   
     
-## Defining the first order step in time for a point in space
+## Defining a third order approximation for the time derivative
+
 
 ```python
-def first_order(i, delta_x, delta_t, old_wavefunction):
-    return complex(0,1) * delta_t * ((old_wavefunction[i-1] - (2 * old_wavefunction[i]) + old_wavefunction[i + 1])/(2 * (delta_x**2)))
+def time_deriv(i, old_wf, delta_x):
+    if i == 0:
+        return complex(0,1) * ((0 - (2 * old_wf[i]) + old_wf[i+1])/(2 * (delta_x**2)))
+    if i == (len(old_wf) - 1):
+        return complex(0,1) * ((old_wf[i-1] - (2 * old_wf[i]) + 0)/(2 * (delta_x**2)))
+    else:
+        return complex(0,1) * ((old_wf[i-1] - (2 * old_wf[i]) + old_wf[i+1])/(2 * (delta_x**2)))
 ```
 
-## Defining a second order step in time for a point in space
+## Defining a first order approximation for a step in time
 
 ```python
-def second_order(i, delta_x, delta_t, old_wavefunction):
-    return complex(0,1) * delta_t * ((first_order(i-1, delta_x, delta_t, old_wavefunction) - (2 * first_order(i, delta_x, delta_t, old_wavefunction)) + first_order(i+1, delta_x, delta_t, old_wavefunction))/(2 * (delta_x**2)))
+def time_step_first_order(old_wf, delta_x, delta_t):
+    new_wf = []
+    for i in range(len(old_wf)):
+        new_wf.append(old_wf[i] + (delta_t * time_deriv(i, old_wf, delta_x)))
+    return new_wf
 ```
 
-## Applying a first order step in time to every point on a wavefunction
+## Plotting a first order approximation for a step in time
 
 ```python
-def time_step_forward_first(delta_x, delta_t, old_wavefunction):
-    new_wavefunction = []
-    old_wavefunction = [0] + old_wavefunction + [0]
-    for i in range(1, (len(old_wavefunction) - 1)):
-        new_wavefunction.append(old_wavefunction[i] + first_order(i, delta_x, delta_t, old_wavefunction))
-    new_probability_density = normalisation(probability_density(new_wavefunction),1)
-    return new_probability_density
+positions = [0.01 * i for i in range(-5000,5001)]
+
+wf_initial = [initial_wf(0.5, x) for x in positions]
+pdf_initial = norm(pdf(wf_initial))
+
+wf_one_step = time_step_first_order(wf_initial, 0.01, 1)
+pdf_one_step = norm(pdf(wf_one_step))
+
+plt.plot(positions, pdf_initial, positions, pdf_one_step)
+plt.axis([-3, 3, 0, 0.006])
 ```
 
-## Applying a second order step in time to every point on a wavefunction
+## Defining a fourth order Runge Kutta approximation for a step in time
 
 ```python
-def time_step_forward_second(delta_x, delta_t, old_wavefunction):
-    new_wavefunction = []
-    old_wavefunction = [0] + [0] + old_wavefunction + [0] + [0]
-    for i in range(2, (len(old_wavefunction) - 2)):
-        new_wavefunction.append(old_wavefunction[i] + first_order(i, delta_x, delta_t, old_wavefunction) + (0.5 * second_order(i, delta_x, delta_t, old_wavefunction) * (delta_t**2)))
-    new_probability_density = normalisation(probability_density(new_wavefunction),1)
-    return new_probability_density
+def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
+    k_1 = []
+    k_2 = []
+    k_3 = []
+    k_4 = []
+    wf_updated = []
+    for i in range(len(x_coords)):
+        k_1.append(delta_t * time_deriv(i, wf_initial, delta_x))
+    for i in range(len(x_coords)):
+        wf_updated.append(wf_initial[i] + (0.5 * k_1[i]))
+    for i in range(len(x_coords)):
+        k_2.append(delta_t * time_deriv(i, wf_updated, delta_x))
+    for i in range(len(x_coords)):
+        wf_updated[i] = wf_initial[i] + k_2[i]/2
+    for i in range(len(x_coords)):
+        k_3.append(delta_t * time_deriv(i, wf_updated, delta_x))
+    for i in range(len(x_coords)):
+        wf_updated[i] = wf_initial[i] + k_3[i]
+    for i in range(len(x_coords)):
+        k_4.append(delta_t * time_deriv(i, wf_updated, delta_x))
+    for i in range(len(x_coords)):
+        wf_updated[i] = wf_initial[i] + (k_1[i] + 2*(k_2[i] + k_3[i]) + k_4[i])/6
+    return(wf_updated) 
 ```
 
-## Creating a set of axes for the animation
+# Plotting a fourth order approximation for a step in time
 
 ```python
-fig = plt.figure(figsize = (12,12))
-ax = plt.axes(xlim=(-1, 1), ylim=(0, 0.0025))
-plt.title('Evolution of the Probability Density for a Free Particle with Time')
-plt.xlabel('Position')
-plt.ylabel('Probability Density')
-line, = ax.plot([], [], lw=2)
-plt.close()
-```
-
-## Initialising the animation
-
-```python
-def init():
-    line.set_data([], [])
-    return line,
-```
-
-## Defining a set of frames for the animation
-
-```python
-positions = [0.001 * i for i in range(-5000,5001)]
-initial_wavefunction = [initial_wavefunction(5,i) for i in positions]
-
-def animate(i):
-    x = positions
-    y = time_step_forward_second(0.25, i, initial_wavefunction)
-    line.set_data(x, y)
-    return line,
-```
-
-## Outputting the animation
-
-```python
-anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames=60, interval=150, blit=True)
-%matplotlib inline
-rc('animation', html='html5')
-anim
+positions = [(0.01 * i) for i in range(-5000,5001)]
+wf_initial = [initial_wf(0.5, x) for x in positions]
+pdf_initial = norm(pdf(wf_initial))
+wf_one_step_2 = rk4(wf_initial, positions, 0.01, 0.5)
+pdf_one_step_2 = norm(pdf(wf_one_step_2))
+plt.plot(positions, pdf_initial, positions, pdf_one_step_2)
+plt.axis([-3, 3, 0, 0.006])
 ```
