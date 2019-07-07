@@ -28,7 +28,7 @@ def probability_density(wavefunction):
     return list(probability_density.real)
 ```
 
-## Applying normalisation condition to a probability density function
+## Applying the normalisation condition to a probability density function
 
 ```python
 def norm(pdf):
@@ -40,7 +40,7 @@ def norm(pdf):
     return norm_pdf
 ```   
     
-## Defining a third order approximation for the time derivative
+## Defining the third order approximation for the time derivative
 
 
 ```python
@@ -53,7 +53,7 @@ def time_deriv(i, old_wf, delta_x):
         return complex(0,1) * ((old_wf[i-1] - (2 * old_wf[i]) + old_wf[i+1])/(2 * (delta_x**2)))
 ```
 
-## Defining a first order approximation for a step in time
+## Defining the first order approximation for a step in time
 
 ```python
 def time_step_first_order(old_wf, delta_x, delta_t):
@@ -63,7 +63,7 @@ def time_step_first_order(old_wf, delta_x, delta_t):
     return new_wf
 ```
 
-## Plotting a first order approximation for a step in time
+## Plotting the first order approximation for a step in time
 
 ```python
 positions = [0.01 * i for i in range(-5000,5001)]
@@ -78,7 +78,7 @@ plt.plot(positions, pdf_initial, positions, pdf_one_step)
 plt.axis([-3, 3, 0, 0.006])
 ```
 
-## Defining a fourth order Runge Kutta approximation for a step in time
+## Defining the fourth order (Runge Kutta) approximation for a step in time
 
 ```python
 def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
@@ -106,7 +106,7 @@ def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
     return(wf_updated) 
 ```
 
-## Plotting a fourth order approximation for a step in time
+## Plotting the fourth order approximation for a step in time
 
 ```python
 positions = [(0.01 * i) for i in range(-5000,5001)]
