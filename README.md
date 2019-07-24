@@ -4,6 +4,30 @@
 
 Solving the one-dimensional Time Dependent Schrodinger Equation using the finite differences method for the simple case of a free-particle.
 
+## Theory
+
+#### The 1D TDSE 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=i\hbar\frac{\partial&space;\psi(x,t)}{\partial&space;t}&space;=&space;-\frac{\hbar^2}{2m}\frac{\partial^2&space;\psi&space;(x,t)}{\partial&space;t^2}&space;&plus;&space;V(x,t)\psi(x,t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?i\hbar\frac{\partial&space;\psi(x,t)}{\partial&space;t}&space;=&space;-\frac{\hbar^2}{2m}\frac{\partial^2&space;\psi&space;(x,t)}{\partial&space;x^2}&space;&plus;&space;V(x,t)\psi(x,t)" title="i\hbar\frac{\partial \psi(x,t)}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2 \psi (x,t)}{\partial x^2} + V(x,t)\psi(x,t)" /></a>
+
+#### The 1D TDSE for a free particle, setting:  <a href="https://www.codecogs.com/eqnedit.php?latex=\hbar&space;=&space;m&space;=&space;1" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\hbar&space;=&space;m&space;=&space;1" title="\hbar = m = 1" /></a>
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;\psi(x,t)}{\partial&space;t}&space;=&space;\frac{i}{2}\frac{\partial^2&space;\psi&space;(x,t)}{\partial&space;t^2}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial&space;\psi(x,t)}{\partial&space;t}&space;=&space;\frac{i}{2}\frac{\partial^2&space;\psi&space;(x,t)}{\partial&space;x^2}" title="\frac{\partial \psi(x,t)}{\partial t} = \frac{i}{2}\frac{\partial^2 \psi (x,t)}{\partial x^2}" /></a>
+
+#### Approximating the derivative in space using a linear combination of third order taylor expansions for three neighboring points
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\psi_{j-1}^n&space;=&space;\psi_j^n&space;-&space;\Delta&space;x&space;\frac{\partial&space;\psi_j^n}{\partial&space;x}&space;&plus;&space;\frac{\Delta&space;x^2}{2}\frac{\partial^2&space;\psi_j^n}{\partial&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\psi_{j-1}^n&space;=&space;\psi_j^n&space;-&space;\Delta&space;x&space;\frac{\partial&space;\psi_j^n}{\partial&space;x}&space;&plus;&space;\frac{\Delta&space;x^2}{2}\frac{\partial^2&space;\psi_j^n}{\partial&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" title="\psi_{j-1}^n = \psi_j^n - \Delta x \frac{\partial \psi_j^n}{\partial x} + \frac{\Delta x^2}{2}\frac{\partial^2 \psi_j^n}{\partial x^2} + O(\Delta x^3)" /></a>
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\psi_{j&plus;1}^n&space;=&space;\psi_j^n&space;&plus;&space;\Delta&space;x&space;\frac{\partial&space;\psi_j^n}{\partial&space;x}&space;&plus;&space;\frac{\Delta&space;x^2}{2}\frac{\partial^2&space;\psi_j^n}{\partial&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\psi_{j&plus;1}^n&space;=&space;\psi_j^n&space;&plus;&space;\Delta&space;x&space;\frac{\partial&space;\psi_j^n}{\partial&space;x}&space;&plus;&space;\frac{\Delta&space;x^2}{2}\frac{\partial^2&space;\psi_j^n}{\partial&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" title="\psi_{j+1}^n = \psi_j^n + \Delta x \frac{\partial \psi_j^n}{\partial x} + \frac{\Delta x^2}{2}\frac{\partial^2 \psi_j^n}{\partial x^2} + O(\Delta x^3)" /></a>
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial&space;\psi_j^n}{\partial&space;x^2}&space;=&space;\frac{\psi_{j-1}^n&space;-2&space;\psi_j^n&space;&plus;&space;\psi_{j&plus;1}^n}{\Delta&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial^2&space;\psi_j^n}{\partial&space;x^2}&space;=&space;\frac{\psi_{j-1}^n&space;-2&space;\psi_j^n&space;&plus;&space;\psi_{j&plus;1}^n}{\Delta&space;x^2}&space;&plus;&space;O(\Delta&space;x^3)" title="\frac{\partial^2 \psi_j^n}{\partial x^2} = \frac{\psi_{j-1}^n -2 \psi_j^n + \psi_{j+1}^n}{\Delta x^2} + O(\Delta x^3)" /></a>
+
+#### Approximating a finite step in time using a first order taylor expansion
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\psi_n^{j&plus;1}&space;=&space;\psi_j^n&space;&plus;&space;\Delta&space;t&space;\frac{\partial&space;\psi_j^n}{\partial&space;t}&space;&plus;&space;O(\Delta&space;t^2)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\psi_n^{j&plus;1}&space;=&space;\psi_j^n&space;&plus;&space;\Delta&space;t&space;\frac{\partial&space;\psi_j^n}{\partial&space;t}&space;&plus;&space;O(\Delta&space;t^2)" title="\psi_n^{j+1} = \psi_j^n + \Delta t \frac{\partial \psi_j^n}{\partial t} + O(\Delta t^2)" /></a>
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=\psi_n^{j&plus;1}&space;=&space;\psi_j^n&space;&plus;&space;\frac{i\Delta&space;t}{2}[\frac{\psi_{j-1}^n&space;-2&space;\psi_j^n&space;&plus;&space;\psi_{j&plus;1}^n}{\Delta&space;x^2}]&space;&plus;&space;O(\Delta&space;t^2)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\psi_n^{j&plus;1}&space;=&space;\psi_j^n&space;&plus;&space;\frac{i\Delta&space;t}{2}[\frac{\psi_{j-1}^n&space;-2&space;\psi_j^n&space;&plus;&space;\psi_{j&plus;1}^n}{\Delta&space;x^2}]&space;&plus;&space;O(\Delta&space;t^2)" title="\psi_n^{j+1} = \psi_j^n + \frac{i\Delta t}{2}[\frac{\psi_{j-1}^n -2 \psi_j^n + \psi_{j+1}^n}{\Delta x^2}] + O(\Delta t^2)" /></a>
+
 ## Importing libaries
 
 ```python
@@ -77,6 +101,7 @@ pdf_one_step = norm(pdf(wf_one_step))
 plt.plot(positions, pdf_initial, positions, pdf_one_step)
 plt.axis([-3, 3, 0, 0.006])
 ```
+![](first_order_approximation.png)
 
 ## Defining the fourth order (Runge Kutta) approximation for a step in time
 
@@ -105,7 +130,6 @@ def time_step_rk4(wf_initial, x_coords, delta_x, delta_t):
         wf_updated[i] = wf_initial[i] + (k_1[i] + 2*(k_2[i] + k_3[i]) + k_4[i])/6
     return(wf_updated) 
 ```
-![](first_order_approximation.png)
 
 ## Plotting the fourth order approximation for a step in time
 
