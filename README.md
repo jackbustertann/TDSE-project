@@ -2,7 +2,7 @@
 
 ## Motivation
 
-Solving the one-dimensional Time Dependent Schrodinger Equation using the finite differences method for the simple case of a free-particle.
+Solving the one-dimensional time dependent Schrodinger equation, for the simple case of a free-particle, using the finite differences method.
 
 ## Theory
 
